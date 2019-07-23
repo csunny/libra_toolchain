@@ -71,6 +71,7 @@ vim peer_keypairs.config.toml
 ```
 
 #####
+```
 docker exec node_five /opt/libra/bin/libra_node -f /opt/libra/etc/node.config.toml --peer_id 8deeeaed65f0cd7484a9e4e5ac51fbac548f2f71299a05e000156031ca78fb9f
 
 docker exec node_two /opt/libra/bin/libra_node -f /opt/libra/etc/node.config.toml --peer_id 1e5d5a74b0fd09f601ac0fca2fe7d213704e02e51943d18cf25a546b8416e9e1
@@ -79,6 +80,41 @@ docker exec node_three /opt/libra/bin/libra_node -f /opt/libra/etc/node.config.t
 
 docker exec node_four /opt/libra/bin/libra_node -f /opt/libra/etc/node.config.toml --peer_id 57ff83747054695f2228042c26eb6a243ac73de1b9038aea103999480b076d45
 
-
+```
 
 #### run client
+
+Edit start_cli_testnet.sh
+```
+#!/bin/bash
+
+print_help()
+{
+    echo "Build client binary and connect to testnet."
+    echo "\`$0 -r|--release\` to use release build or"
+    echo "\`$0\` to use debug build."
+}
+
+source "$HOME/.cargo/env"
+
+SCRIPT_PATH="$(dirname $0)"
+
+RUN_PARAMS="--host 127.0.0.1 --port 30307 -s ./trusted_peers.config.toml"
+
+case $1 in
+    -h | --help)
+        print_help;exit 0;;
+    -r | --release)
+        echo "Building and running client in release mode."
+        cargo run -p client --release -- $RUN_PARAMS
+        ;;
+    '')
+        echo "Building and running client in debug mode."
+        cargo run -p client -- $RUN_PARAMS
+        ;;
+    *) echo "Invalid option"; print_help; exit 0;
+esac
+```
+The run command `sh start_cli_testnet.sh`
+
+
